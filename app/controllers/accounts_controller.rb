@@ -1,4 +1,9 @@
 class AccountsController < ApplicationController
+
+  def show
+    render json: Account.find(account_id)
+  end
+
   def create
     Account.create(account_params)
   end
