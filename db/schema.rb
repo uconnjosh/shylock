@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170427150414) do
+ActiveRecord::Schema.define(version: 20170428160521) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -25,12 +25,25 @@ ActiveRecord::Schema.define(version: 20170427150414) do
     t.datetime "updated_at",   null: false
   end
 
+  create_table "statements", force: :cascade do |t|
+    t.date     "begin_date"
+    t.date     "end_date"
+    t.float    "beginning_balance"
+    t.float    "ending_balance"
+    t.float    "interest_charged"
+    t.integer  "account_id"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+  end
+
   create_table "transactions", force: :cascade do |t|
     t.string   "amount"
     t.string   "for"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
     t.integer  "account_id"
+    t.boolean  "interest_charge"
+    t.integer  "statement_id"
     t.index ["account_id"], name: "index_transactions_on_account_id", using: :btree
   end
 
