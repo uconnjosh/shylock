@@ -50,7 +50,7 @@ class StatementsController < ApplicationController
   def charge_interest
     Transaction.create(
       interest_charge: true,
-      amount: interest_due,
+      amount: interest_due.to_s,
       for: "Interest charge for statement period: #{statement_period}",
       account_id: account_id
     )
