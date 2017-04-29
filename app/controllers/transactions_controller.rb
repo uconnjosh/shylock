@@ -2,7 +2,9 @@ class TransactionsController < ApplicationController
   def create
     return 403 unless transaction_approved
 
-    Transaction.create(transaction_params.merge(account_id: account_id))
+    transaction = Transaction.create(transaction_params.merge(account_id: account_id))
+
+    render json: transaction
   end
 
 private
