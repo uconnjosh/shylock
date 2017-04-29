@@ -1,9 +1,7 @@
 class StatementsController < ApplicationController
   def create
 
-    if interest_due > 0
-      charge_interest
-    end
+    charge_interest if interest_due > 0
 
     statement = Statement.create(
       end_date: end_date,

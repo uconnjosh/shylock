@@ -15,7 +15,10 @@ class AccountsController < ApplicationController
 private
 
   def account_params
-    ActiveModelSerializers::Deserialization.jsonapi_parse(params, only: [:email, :"credit-limit", :"open-date", :apr ])
+    ActiveModelSerializers::Deserialization.jsonapi_parse(
+      params,
+      only: [:email, :"credit-limit", :"open-date", :apr]
+    )
   end
 
   def account_id
