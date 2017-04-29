@@ -2,11 +2,13 @@ class Account < ApplicationRecord
   has_many :transactions
 
   def balance(day = DateTime.now)
-    transactions.where("created_at <= :day", day: day).pluck(:amount).inject { |a, e| a.to_f + e.to_f }.to_f
+    return 0 unless transactions.length > 0
+
+    transactions.where("created_at <= :day", day: day).pluck(:amount).inject { |a, e| a + e }
   end
 
   def principle_balance(day = DateTime.now)
-    transactions.principle.where("created_at <= :day", day: day).pluck(:amount).inject { |a, e| a.to_f + e.to_f }.to_f
+    transactions.principle.where("created_at <= :day", day: day).pluck(:amount).inject { |a, e| a + e }
   end
 
   def statement_interest(days = 30)
