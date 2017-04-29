@@ -1,25 +1,26 @@
 class Account < ApplicationRecord
   has_many :transactions
 
-  def balance(day = DateTime.now)
-    return 0 unless transactions.length > 0
+  def balance(day = DateTime.now, principle_only = false)
+    return 0 if transactions.empty?
 
-    transactions.where("created_at <= :day", day: day).pluck(:amount).inject { |a, e| a + e }
-  end
+    balance_transactions =
+      principle_only ? transactions.principle : transactions
 
-  def principle_balance(day = DateTime.now)
-    transactions.principle.where("created_at <= :day", day: day).pluck(:amount).inject { |a, e| a + e }
+    balance_transactions
+      .where('created_at <= :day', day: day)
+      .pluck(:amount).inject { |a, e| a + e } || 0
   end
 
   def statement_interest(days = 30)
-    average_daily_balance * apr.to_f/365 * days
+    average_daily_balance * apr / 365 * days
   end
 
   def average_daily_balance(days = 30)
     summed_balance = 0
 
     days.times do |i|
-      summed_balance += principle_balance(i.days.ago)
+      summed_balance += balance(i.days.ago, true)
     end
 
     summed_balance / days
