@@ -1,8 +1,10 @@
 class TransactionsController < ApplicationController
   def create
-    return 403 unless transaction_approved
+    approve_transaction
 
-    transaction = Transaction.create(transaction_params.merge(account_id: account_id))
+    transaction = Transaction.create(
+      transaction_params.merge(account_id: account.id).except(:email, :password)
+    )
 
     render json: transaction
   end
@@ -10,19 +12,32 @@ class TransactionsController < ApplicationController
 private
 
   def transaction_params
-    ActiveModelSerializers::Deserialization.jsonapi_parse(params, only: [:amount, :for ])
-  end
-
-  def account_id
-    # hard coded for now, will come from session later
-    12
+    ActiveModelSerializers::Deserialization.jsonapi_parse(
+      params,
+      only: [:amount, :for, :account_id, :email, :password]
+    )
   end
 
   def account
-    @account ||= Account.find(account_id)
+    @account ||= Account.find(transaction_params[:account_id])
   end
 
-  def transaction_approved
-    account.balance >= transaction_params[:amount]
+  def account_not_found
+    json_api_error(details: 'no account found', status: 404) && return
+  end
+
+  def insuficient_credit
+    json_api_error(details: 'insuficient credit', status: 403) && return
+  end
+
+  def approve_transaction
+    account_not_found unless
+      authenticate_account(
+        account.id,
+        transaction_params[:email],
+        transaction_params[:password]
+      )
+
+    insuficient_credit unless account.balance >= transaction_params[:amount]
   end
 end
