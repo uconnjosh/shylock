@@ -1,4 +1,5 @@
 class Account < ApplicationRecord
+  belongs_to :user
   has_many :transactions
 
   def balance(day = DateTime.now, principle_only = false)
