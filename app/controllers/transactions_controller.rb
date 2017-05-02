@@ -1,5 +1,5 @@
 class TransactionsController < ApplicationController
-  before_action :authorize_account
+  before_action :authorize_account, only: [:create, :show]
 
   def create
     approve_transaction
@@ -15,11 +15,18 @@ class TransactionsController < ApplicationController
     render json: transaction
   end
 
+  def index
+    transactions = Transaction.all_for_user(authenticated_user.id)
+
+    render json: transactions, is_collection: true
+  end
+
 private
 
   def transaction
     @transaction ||= Transaction.find(params[:id])
   end
+
   def transaction_params
     ActiveModelSerializers::Deserialization.jsonapi_parse(
       params,
