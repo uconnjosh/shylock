@@ -1,6 +1,7 @@
 class Account < ApplicationRecord
   belongs_to :user
   has_many :transactions
+  has_many :statements
 
   def balance(day = DateTime.now, principle_only = false)
     return 0 if transactions.empty?

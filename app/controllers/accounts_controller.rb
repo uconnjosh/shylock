@@ -11,7 +11,9 @@ class AccountsController < ApplicationController
   def create
     # only superusers can open new credit accounts
     authorize_superuser
-    account = Account.create(account_params)
+    account =
+      Account.create(account_params.merge(user_id: related_user[:id]))
+
     Statement.create(account_id: account.id)
 
     render json: account
@@ -30,12 +32,18 @@ private
   def account_params
     ActiveModelSerializers::Deserialization.jsonapi_parse(
       params,
-      only: [:email, :password, :"credit-limit", :"open-date", :apr, :user_id]
+      only: [:email, :password, :"credit-limit", :"open-date", :apr]
     )
   end
 
   def account
     @account ||= Account.find(params[:id])
+  end
+
+  def related_user
+    user_data = params[:relationships][:user]
+
+    ActiveModelSerializers::Deserialization.jsonapi_parse(user_data, only: :id)
   end
 
   def authorize_account_owner

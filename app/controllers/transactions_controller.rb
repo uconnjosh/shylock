@@ -34,7 +34,7 @@ private
     )
   end
 
-  def account_params
+  def related_account
     account_data = params[:relationships][:account]
 
     ActiveModelSerializers::Deserialization.jsonapi_parse(account_data, only: :id)
@@ -45,7 +45,7 @@ private
       if params[:id]
         transaction.account
       else
-        Account.find(account_params[:id])
+        Account.find(related_params[:id])
       end
   end
 

@@ -8,11 +8,15 @@ class UsersController < ApplicationController
   end
 
   def create
-    User.create(user_params)
+    new_user = User.create(user_params)
+
+    render json: new_user
   end
 
   def update
     user.update_attributes(user_params)
+
+    render json: user
   end
 
   def destroy
