@@ -1,24 +1,79 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
 
-Things you may want to cover:
+A credit card API written in rails 5.0.2, Ruby 2.3.0.
 
-* Ruby version
+#### Getting going
 
-* System dependencies
+1. Create a superuser account in the Rails console:
+`2.3.0 :001 > User.create(email: "you@gmail.com", password: "foobars", superuser: true)`
 
-* Configuration
+2. For other requests, you can use curl, the Postman plugin for Chrome, or any
+other request tool (I used postman).
 
-* Database creation
+3. All requests requiring authentication will require the following, base64 encoded,
+and placed as the value of an `Authorization` key in your requests:
+`YOUR_EMAIL:YOUR_PASSWORD`
+This can easily be done in the Rails console, or here:
+https://www.base64encode.org/
 
-* Database initialization
+4. Create (other) users:
+```
+{
+  "data":{
+    "type": "users",
+	"attributes": {
+	  "email": "jbiden@whitehouse.gov",
+	  "password": "foobars",
+	  "address": "123 Hickory Lane",
+	  "phone": "5555555555"
+    }
+  }
+}
+```
+5. Create accounts for your users (you must be using superuser credentials
+to do this):
+```
+{"data":
+  {
+    "type": "accounts",
+    "attributes":
+      {
+        "apr": 0.25, "credit-limit": 10000
+      }
 
-* How to run the test suite
+   },
+   "relationships": {
+     "user": {
+       "data": {"id": ID_OF_USER_FOR_ACCOUNT, "type":"users"}
+     }
+   }
+}
+```
 
-* Services (job queues, cache servers, search engines, etc.)
+6. Creating transactions - a transaction can be a charge or an account payment.
+You will need to have the `Authorization` credentials related to the account owner
+in your headers:
+```
+{"data":
+  {
+    "type": "transactions",
+    "attributes":
+      {
+        "amount": 25, "currency": "USD", "for": "booze"
+      }
 
-* Deployment instructions
+   },
+   "relationships": {
+     "account": {
+       "data": {"id": ID_OF_ACCOUNT_TO_CHARGE, "type":"accounts"}
+     }
+   }
+}
+```
+7. View all transactions (for authorized user):
 
-* ...
+`http://localhost:3000/transactions`
+
+8. Get individual account information (authorized user or superuser allowed):
+`http://localhost:3000/accounts/ACCOUNT_ID`

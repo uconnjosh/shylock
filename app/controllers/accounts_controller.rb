@@ -48,7 +48,7 @@ private
 
   def authorize_account_owner
     account_not_found unless
-      authenticate_account(params[:id]) || authorized_superuser
+      authenticate_account(params[:id]) || authenticated_superuser
   end
 
   def authorize_superuser
