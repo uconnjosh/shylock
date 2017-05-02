@@ -26,4 +26,17 @@ class Account < ApplicationRecord
 
     summed_balance / days
   end
+
+  def self.ids_where_statement_due
+    # return account ids where the last statement is greater than 30 days old
+    query = <<-SQL
+      SELECT a.id
+      FROM accounts a
+      JOIN statements s1 on (a.id = s1.account_id)
+      LEFT OUTER JOIN statements s2 on a.id = s2.account_id AND (s1.id < s2.id)
+      WHERE s2.id IS NULL AND s1.created_at <= (now() - interval '30 days')
+    SQL
+
+    result = ActiveRecord::Base.connection.exec_query(query).rows.flatten
+  end
 end

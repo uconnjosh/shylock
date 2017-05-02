@@ -1,4 +1,6 @@
 class TransactionsController < ApplicationController
+  before_action :authorize_account
+
   def create
     approve_transaction
 
@@ -22,22 +24,15 @@ private
     @account ||= Account.find(transaction_params[:account_id])
   end
 
-  def account_not_found
-    json_api_error(details: 'no account found', status: 404) && return
-  end
-
   def insuficient_credit
     json_api_error(details: 'insuficient credit', status: 403) && return
   end
 
   def approve_transaction
-    account_not_found unless
-      authenticate_account(
-        account.id,
-        transaction_params[:email],
-        transaction_params[:password]
-      )
-
     insuficient_credit unless account.balance >= transaction_params[:amount]
+  end
+
+  def authorize_account
+    account_not_found unless authenticate_account(account.id)
   end
 end

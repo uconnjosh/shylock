@@ -1,6 +1,9 @@
 class UsersController < ApplicationController
 
   def show
+    account_not_found unless
+      authenticated_user
+
     render json: user
   end
 
@@ -26,6 +29,6 @@ private
   end
 
   def user
-    User.find(params[:id])
+    @user ||= User.find(params[:id])
   end
 end
