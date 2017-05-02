@@ -5,7 +5,7 @@ class TransactionsController < ApplicationController
     approve_transaction
 
     transaction = Transaction.create(
-      transaction_params.merge(account_id: account.id).except(:email, :password)
+      transaction_params.merge(account_id: account.id)
     )
 
     render json: transaction
@@ -16,12 +16,19 @@ private
   def transaction_params
     ActiveModelSerializers::Deserialization.jsonapi_parse(
       params,
-      only: [:amount, :for, :account_id, :email, :password]
+      only: [:amount, :for]
     )
   end
 
+  def account_params
+    account_data = params[:relationships][:account]
+
+    ActiveModelSerializers::Deserialization.jsonapi_parse(account_data, only: :id)
+  end
+
   def account
-    @account ||= Account.find(transaction_params[:account_id])
+
+    @account ||= Account.find(account_params[:id])
   end
 
   def insuficient_credit
