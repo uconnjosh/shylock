@@ -30,7 +30,7 @@ private
   def transaction_params
     ActiveModelSerializers::Deserialization.jsonapi_parse(
       params,
-      only: [:amount, :for, :id]
+      only: [:amount, :for, :id, :currency]
     )
   end
 
@@ -45,7 +45,7 @@ private
       if params[:id]
         transaction.account
       else
-        Account.find(related_params[:id])
+        Account.find(related_account[:id])
       end
   end
 
