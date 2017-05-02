@@ -55,6 +55,9 @@ GEM
     delayed_job_active_record (4.1.1)
       activerecord (>= 3.0, < 5.1)
       delayed_job (>= 3.0, < 5)
+    delayed_job_recurring (0.3.6)
+      delayed_job (>= 3.0)
+      delayed_job_active_record
     erubis (2.7.0)
     ffi (1.9.18)
     globalid (0.4.0)
@@ -141,7 +144,7 @@ PLATFORMS
 DEPENDENCIES
   active_model_serializers (~> 0.10.0)
   byebug
-  delayed_job_active_record
+  delayed_job_recurring
   listen (~> 3.0.5)
   pg
   pry

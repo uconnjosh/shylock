@@ -1,15 +1,28 @@
 class AccountsController < ApplicationController
+  before_action :authorize_superuser, only: [:create, :update]
+  before_action :authorize_account_owner, only: :show
 
   def show
-    render json: Account.find(account_id)
+    authorize_account_owner
+
+    render json: account
   end
 
   def create
-    Account.create(account_params)
+    # only superusers can open new credit accounts
+    authorize_superuser
+    account = Account.create(account_params)
+    Statement.create(account_id: account.id)
+
+    render json: account
   end
 
   def update
-    Account.find(account_id).update_attributes(account_params)
+    authorize_account_owner
+
+    account.update_attributes(account_params)
+
+    render json: account
   end
 
 private
@@ -17,11 +30,20 @@ private
   def account_params
     ActiveModelSerializers::Deserialization.jsonapi_parse(
       params,
-      only: [:email, :"credit-limit", :"open-date", :apr]
+      only: [:email, :password, :"credit-limit", :"open-date", :apr, :user_id]
     )
   end
 
-  def account_id
-    params[:id]
+  def account
+    @account ||= Account.find(params[:id])
+  end
+
+  def authorize_account_owner
+    account_not_found unless
+      authenticate_account(params[:id])
+  end
+
+  def authorize_superuser
+    account_not_found unless authenticated_superuser
   end
 end
