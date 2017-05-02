@@ -8,7 +8,7 @@ class GenerateStatements
     generate_statements
   end
 
-  def genererate_statements
+  def generate_statements
     Account.ids_where_statement_due.each do |a_id|
       @account = Account.find(a_id)
       generate_statement

@@ -8,6 +8,11 @@ A credit card API written in rails 5.0.2, Ruby 2.3.0.
 1. Create a superuser account in the Rails console:
 `2.3.0 :001 > User.create(email: "you@gmail.com", password: "foobars", superuser: true)`
 
+2. Setup:
+  - `bundle install`
+  - `rake db:migrate`
+  - `rails s`
+
 2. For other requests, you can use curl, the Postman plugin for Chrome, or any
 other request tool (I used postman).
 
@@ -77,3 +82,8 @@ in your headers:
 
 8. Get individual account information (authorized user or superuser allowed):
 `http://localhost:3000/accounts/ACCOUNT_ID`
+
+9. As long as this app is running, everyday at 7:40 pm pacific time, a delayed
+job will run. The job can be found here: `shylock/app/jobs/generate_statements.rb`
+
+It will create statements, and charge monthly interest for due accounts.
