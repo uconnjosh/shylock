@@ -11,12 +11,19 @@ class TransactionsController < ApplicationController
     render json: transaction
   end
 
+  def show
+    render json: transaction
+  end
+
 private
 
+  def transaction
+    @transaction ||= Transaction.find(params[:id])
+  end
   def transaction_params
     ActiveModelSerializers::Deserialization.jsonapi_parse(
       params,
-      only: [:amount, :for]
+      only: [:amount, :for, :id]
     )
   end
 
@@ -27,8 +34,12 @@ private
   end
 
   def account
-
-    @account ||= Account.find(account_params[:id])
+    @account ||=
+      if params[:id]
+        transaction.account
+      else
+        Account.find(account_params[:id])
+      end
   end
 
   def insuficient_credit
