@@ -9,6 +9,8 @@ A credit card API written in rails 5.0.2, Ruby 2.3.0.
 `2.3.0 :001 > User.create(email: "you@gmail.com", password: "foobars", superuser: true)`
 
 2. Setup:
+  - Install postgres (I used version 9.4.3)
+  - Create a database with name `shylock`
   - `bundle install`
   - `rake db:migrate`
   - `rails s`
